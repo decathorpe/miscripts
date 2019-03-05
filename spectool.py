@@ -259,7 +259,7 @@ class Spec:
         if parsed.scheme:
             if not dry:
                 try:
-                    print("Downloading: {}:".format(value))
+                    print("Downloading: {}".format(value))
                     get_file(value, os.path.join(directory, basename), force)
                     print("Downloaded: {}".format(basename))
                 except IOError as e:
@@ -278,7 +278,7 @@ class Spec:
         if parsed.scheme:
             if not dry:
                 try:
-                    print("Downloading: {}:".format(value))
+                    print("Downloading: {}".format(value))
                     get_file(value, os.path.join(directory, basename), force)
                     print("Downloaded: {}".format(basename))
                 except IOError as e:

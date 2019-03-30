@@ -78,8 +78,8 @@ def main() -> int:
         maintained.add_row([
             name,
             ", ".join(owner),
-            ", ".join(admin) if admin else "None",
-            ", ".join(commit) if commit else "None"
+            ", ".join(admin) if admin else "--",
+            ", ".join(commit) if commit else "--"
         ])
 
         num_maintained += 1

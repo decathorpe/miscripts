@@ -187,8 +187,8 @@ def get_file(url: str, path: str, force: bool):
             print("File '{}' already present.".format(path))
             return
 
+    response = requests.get(url)
     with open(path, "wb") as file:
-        response = requests.get(url)
         file.write(response.content)
 
 
@@ -249,12 +249,20 @@ class Spec:
         for (number, value) in self.patches.items():
             self.print_patch(number, value)
 
-    def get_source(self, number: int, directory: str, force: bool, dry: bool, value: str = None):
-        if not value:
-            value = self.sources[number]
-
+    @staticmethod
+    def _get_file(value: str, directory: str, force: bool, dry: bool):
         parsed = urlparse(value)
-        basename = os.path.basename(parsed.path)
+
+        if "#" not in value:
+            basename = os.path.basename(parsed.path)
+        else:
+            try:
+                _, basename = value.split("#")
+                basename = basename.lstrip("/")
+            except ValueError:
+                # multiple "#" characters inside
+                print("Invalid URL:", value)
+                return
 
         if parsed.scheme:
             if not dry:
@@ -267,25 +275,18 @@ class Spec:
                     print(e)
             else:
                 print("Would have downloaded: {}".format(value))
+
+    def get_source(self, number: int, directory: str, force: bool, dry: bool, value: str = None):
+        if not value:
+            value = self.sources[number]
+
+        self._get_file(value, directory, force, dry)
 
     def get_patch(self, number: int, directory: str, force: bool, dry: bool, value: str = None):
         if not value:
             value = self.patches[number]
 
-        parsed = urlparse(value)
-        basename = os.path.basename(parsed.path)
-
-        if parsed.scheme:
-            if not dry:
-                try:
-                    print("Downloading: {}".format(value))
-                    get_file(value, os.path.join(directory, basename), force)
-                    print("Downloaded: {}".format(basename))
-                except IOError as e:
-                    print("Download failed:")
-                    print(e)
-            else:
-                print("Would have downloaded: {}".format(value))
+        self._get_file(value, directory, force, dry)
 
     def get_sources(self, directory: str, force: bool, dry: bool):
         for number, value in self.sources.items():

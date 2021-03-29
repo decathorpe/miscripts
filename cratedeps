@@ -1,0 +1,19 @@
+#!/usr/bin/bash
+
+(
+dnf --quiet \
+  --installroot=/tmp/dnf/ \
+  --repo rawhide \
+  --repo rawhide-source \
+  --releasever rawhide \
+  repoquery \
+  --whatrequires "rust-$1-devel"
+
+dnf --quiet \
+  --installroot=/tmp/dnf/ \
+  --repo rawhide \
+  --repo rawhide-source \
+  --releasever rawhide \
+  repoquery \
+  --whatrequires "rust-$1+*-devel"
+) | sort | uniq
